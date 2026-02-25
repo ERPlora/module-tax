@@ -7,6 +7,11 @@ urlpatterns = [
     # Dashboard
     path('', views.dashboard, name='dashboard'),
 
+    # Navigation tab aliases
+    path('rates/', views.tax_rates_list, name='rates'),
+    path('reports/', views.dashboard, name='reports'),
+
+
     # TaxRate
     path('tax_rates/', views.tax_rates_list, name='tax_rates_list'),
     path('tax_rates/add/', views.tax_rate_add, name='tax_rate_add'),
