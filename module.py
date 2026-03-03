@@ -31,3 +31,19 @@ PERMISSIONS = [
 'tax.add_taxreport',
 'tax.manage_settings',
 ]
+
+ROLE_PERMISSIONS = {
+    "admin": ["*"],
+    "manager": [
+        "add_taxrate",
+        "add_taxreport",
+        "change_taxrate",
+        "view_taxrate",
+        "view_taxreport",
+    ],
+    "employee": [
+        "add_taxrate",
+        "view_taxrate",
+        "view_taxreport",
+    ],
+}
