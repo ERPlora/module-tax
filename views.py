@@ -3,6 +3,8 @@ Tax Management Module Views
 """
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import HttpResponse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, render as django_render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -113,6 +115,7 @@ def tax_rates_list(request):
     }
 
 @login_required
+@htmx_view('tax/pages/tax_rate_add.html', 'tax/partials/tax_rate_add_content.html')
 def tax_rate_add(request):
     hub_id = request.session.get('hub_id')
     if request.method == 'POST':
@@ -128,10 +131,13 @@ def tax_rate_add(request):
         obj.is_default = is_default
         obj.is_active = is_active
         obj.save()
-        return _render_tax_rates_list(request, hub_id)
-    return django_render(request, 'tax/partials/panel_tax_rate_add.html', {})
+        response = HttpResponse(status=204)
+        response['HX-Redirect'] = reverse('tax:tax_rates_list')
+        return response
+    return {}
 
 @login_required
+@htmx_view('tax/pages/tax_rate_edit.html', 'tax/partials/tax_rate_edit_content.html')
 def tax_rate_edit(request, pk):
     hub_id = request.session.get('hub_id')
     obj = get_object_or_404(TaxRate, pk=pk, hub_id=hub_id, is_deleted=False)
@@ -143,7 +149,7 @@ def tax_rate_edit(request, pk):
         obj.is_active = request.POST.get('is_active') == 'on'
         obj.save()
         return _render_tax_rates_list(request, hub_id)
-    return django_render(request, 'tax/partials/panel_tax_rate_edit.html', {'obj': obj})
+    return {'obj': obj}
 
 @login_required
 @require_POST
@@ -261,6 +267,7 @@ def tax_reports_list(request):
     }
 
 @login_required
+@htmx_view('tax/pages/tax_report_add.html', 'tax/partials/tax_report_add_content.html')
 def tax_report_add(request):
     hub_id = request.session.get('hub_id')
     if request.method == 'POST':
@@ -281,9 +288,10 @@ def tax_report_add(request):
         obj.status = status
         obj.save()
         return _render_tax_reports_list(request, hub_id)
-    return django_render(request, 'tax/partials/panel_tax_report_add.html', {})
+    return {}
 
 @login_required
+@htmx_view('tax/pages/tax_report_edit.html', 'tax/partials/tax_report_edit_content.html')
 def tax_report_edit(request, pk):
     hub_id = request.session.get('hub_id')
     obj = get_object_or_404(TaxReport, pk=pk, hub_id=hub_id, is_deleted=False)
@@ -297,7 +305,7 @@ def tax_report_edit(request, pk):
         obj.status = request.POST.get('status', '').strip()
         obj.save()
         return _render_tax_reports_list(request, hub_id)
-    return django_render(request, 'tax/partials/panel_tax_report_edit.html', {'obj': obj})
+    return {'obj': obj}
 
 @login_required
 @require_POST
